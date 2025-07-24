@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summer Drink Quiz ✨</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #FED7E2 0%, #FED7D7 100%);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 {
+            color: #D53F8C;
+            margin-bottom: 1rem;
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        p {
+            font-size: 1.2rem;
+            color: #4A5568;
+            margin-bottom: 2rem;
+        }
+        button {
+            background: linear-gradient(135deg, #D53F8C 0%, #B83280 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.8rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(213, 63, 140, 0.2);
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(213, 63, 140, 0.3);
+        }
+        .screen {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        .screen.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .result-image {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .result-image:hover {
+            transform: scale(1.02);
+        }
+        .result-description {
+            font-size: 1.1rem;
+            color: #4A5568;
+            margin: 1.5rem 0;
+            line-height: 1.6;
+            padding: 0 1rem;
+        }
+        #result-title {
+            font-size: 1.8rem;
+            color: #D53F8C;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcome" class="screen active">
+            <h1>🌸 Summer Drink Quiz 🌸</h1>
+            <p>Let's find your perfect summer drink!</p>
+            <button onclick="startQuiz()">Start Quiz!</button>
+        </div>
+
+        <!-- Question 1 -->
+        <div id="q1" class="screen">
+            <h1>What's your summer vibe? 🌞</h1>
+            <button onclick="nextQuestion('q1', 'q2', 'tropical')">Beach goddess energy ✨</button>
+            <button onclick="nextQuestion('q1', 'q2', 'refreshing')">Pool party queen 👑</button>
+            <button onclick="nextQuestion('q1', 'q2', 'relaxing')">Cozy patio sipping 🌅</button>
+            <button onclick="nextQuestion('q1', 'q2', 'energetic')">Festival ready! 🎉</button>
+        </div>
+
+        <!-- Question 2 -->
+        <div id="q2" class="screen">
+            <h1>Pick your flavor crush 💖</h1>
+            <button onclick="nextQuestion('q2', 'q3', 'fruity')">Sweet & fruity 🍓</button>
+            <button onclick="nextQuestion('q2', 'q3', 'citrus')">Tart & tangy 🍋</button>
+            <button onclick="nextQuestion('q2', 'q3', 'herbal')">Herbal & fresh 🌿</button>
+            <button onclick="nextQuestion('q2', 'q3', 'spicy')">Spicy & bold 🌶️</button>
+        </div>
+
+        <!-- Question 3 -->
+        <div id="q3" class="screen">
+            <h1>Caffeine or nah? ⚡</h1>
+            <button onclick="showResult('caffeinated')">Need my buzz! ⚡</button>
+            <button onclick="showResult('non-caffeinated')">Keep it chill 😌</button>
+            <button onclick="showResult('light-caffeine')">Just a little boost 🌱</button>
+            <button onclick="showResult('any')">Surprise me! 🎲</button>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result" class="screen">
+            <h1 id="result-title"></h1>
+            <img id="result-image" class="result-image" src="" alt="Your perfect drink">
+            <p id="result-description" class="result-description"></p>
+            <button onclick="resetQuiz()">Try Again! 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // Store user choices
+        let userChoices = {
+            vibe: '',
+            flavor: '',
+            caffeine: ''
+        };
+
+        // All possible drink combinations
+        const drinks = {
+            tropical: {
+                fruity: {
+                    caffeinated: {
+                        name: "Passion Fruit Green Tea Fizz",
+                        image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd",
+                        description: "A vibrant blend of tropical passion fruit, energizing green tea, and sparkling water. Topped with fresh mint and edible flowers! ✨🌺"
+                    },
+                    'non-caffeinated': {
+                        name: "Rainbow Paradise Smoothie",
+                        image: "https://images.unsplash.com/photo-1622597467836-f3c7ca3b4c25",
+                        description: "A dreamy blend of dragon fruit, mango, pineapple, and coconut milk. Topped with tropical fruit and edible flowers! 🌈🥥"
+                    },
+                    'light-caffeine': {
+                        name: "White Tea Sangria",
+                        image: "https://images.unsplash.com/photo-1544145945-f90425340c7e",
+                        description: "A delicate blend of white tea, lychee, and tropical fruits. Light, refreshing, and absolutely gorgeous! 🍊✨"
+                    }
+                },
+                citrus: {
+                    caffeinated: {
+                        name: "Yuzu Cold Brew Sparkler",
+                        image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+                        description: "A sophisticated cold brew infused with yuzu citrus and a hint of honey. Topped with orange zest! ☕🍯"
+                    },
+                    'non-caffeinated': {
+                        name: "Sunset Citrus Punch",
+                        image: "https://images.unsplash.com/photo-1536935338788-846bb9981813",
+                        description: "A stunning blend of blood orange, grapefruit, and mango. Garnished with citrus wheels and mint! 🌅"
+                    }
+                }
+            },
+            refreshing: {
+                fruity: {
+                    caffeinated: {
+                        name: "Berry Burst Tea Fizz",
+                        image: "https://images.unsplash.com/photo-1606943932434-2f21e1c54ef2",
+                        description: "Black tea with mixed berries, mint, and sparkling water. Topped with fresh berries! 🫐"
+                    },
+                    'non-caffeinated': {
+                        name: "Watermelon Mint Fresca",
+                        image: "https://images.unsplash.com/photo-1527661591475-527312dd65f5",
+                        description: "Fresh watermelon juice with mint, lime, and a splash of coconut water. Summer in a glass! 🍉"
+                    }
+                },
+                citrus: {
+                    caffeinated: {
+                        name: "Grapefruit Earl Grey Spritz",
+                        image: "https://images.unsplash.com/photo-1544145945-f90425340c7e",
+                        description: "Earl Grey tea with fresh grapefruit juice and a hint of rosemary. Sophisticated and bright! 🍊"
+                    },
+                    'non-caffeinated': {
+                        name: "Citrus Grove Sparkler",
+                        image: "https://images.unsplash.com/photo-1536935338788-846bb9981813",
+                        description: "A blend of fresh citrus juices with rosemary and sparkling water. Like a walk through a citrus grove! 🍋"
+                    }
+                }
+            },
+            relaxing: {
+                fruity: {
+                    caffeinated: {
+                        name: "Lavender Berry Tea",
+                        image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc",
+                        description: "Earl Grey tea with lavender, mixed berries, and a touch of honey. Calming and delightful! 💜"
+                    },
+                    'non-caffeinated': {
+                        name: "Strawberry Rose Cooler",
+                        image: "https://images.unsplash.com/photo-1622597467836-f3c7ca3b4c25",
+                        description: "Fresh strawberries with rose water and vanilla. Like a summer garden party! 🌹"
+                    }
+                }
+            },
+            energetic: {
+                fruity: {
+                    caffeinated: {
+                        name: "Triple Berry Energy Blast",
+                        image: "https://images.unsplash.com/photo-1606943932434-2f21e1c54ef2",
+                        description: "Cold brew with mixed berries and a hint of mint. A fruity power-up! ⚡"
+                    },
+                    'non-caffeinated': {
+                        name: "Dragon Fruit Power Punch",
+                        image: "https://images.unsplash.com/photo-1622597467836-f3c7ca3b4c25",
+                        description: "Dragon fruit, strawberry, and coconut water. Vibrant and energizing! 🐉"
+                    }
+                },
+                spicy: {
+                    caffeinated: {
+                        name: "Fire Dragon Cold Brew",
+                        image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735",
+                        description: "Cold brew with dragon fruit, chili, and ginger. Bold and energizing! 🔥"
+                    },
+                    'non-caffeinated': {
+                        name: "Spicy Mango Energizer",
+                        image: "https://images.unsplash.com/photo-1587888637140-849b25d80ef9",
+                        description: "Fresh mango with chili, lime, and ginger. A tropical kick! 🌶️"
+                    }
+                }
+            }
+        };
+
+        function startQuiz() {
+            document.getElementById('welcome').classList.remove('active');
+            document.getElementById('q1').classList.add('active');
+            console.log('Starting quiz');
+        }
+
+        function nextQuestion(current, next, answer) {
+            // Store the answer
+            if (current === 'q1') {
+                userChoices.vibe = answer;
+                console.log('Vibe chosen:', answer);
+            }
+            if (current === 'q2') {
+                userChoices.flavor = answer;
+                console.log('Flavor chosen:', answer);
+            }
+            
+            document.getElementById(current).classList.remove('active');
+            document.getElementById(next).classList.add('active');
+        }
+
+        function showResult(caffeine) {
+            userChoices.caffeine = caffeine;
+            console.log('Final choices:', userChoices);
+            
+            // Get a drink recommendation based on choices
+            let drink = getRecommendation(userChoices);
+            console.log('Recommended drink:', drink);
+            
+            // Update result screen
+            document.getElementById('result-title').textContent = drink.name;
+            document.getElementById('result-image').src = drink.image;
+            document.getElementById('result-description').textContent = drink.description;
+            
+            // Show result screen
+            document.getElementById('q3').classList.remove('active');
+            document.getElementById('result').classList.add('active');
+        }
+
+        function getRecommendation(choices) {
+            console.log('Getting recommendation for:', choices);
+            
+            // Default drink if no match is found
+            const defaultDrink = {
+                name: "Magical Summer Sparkler",
+                image: "https://images.unsplash.com/photo-1622597467836-f3c7ca3b4c25",
+                description: "A magical blend of summer fruits and sparkling water. Perfect for any summer day! ✨🍓"
+            };
+
+            try {
+                // Try to get specific drink based on choices
+                if (choices.vibe && choices.flavor && choices.caffeine) {
+                    const vibeChoices = drinks[choices.vibe];
+                    if (vibeChoices) {
+                        const flavorChoices = vibeChoices[choices.flavor];
+                        if (flavorChoices) {
+                            const drink = flavorChoices[choices.caffeine];
+                            if (drink) {
+                                console.log('Found matching drink:', drink);
+                                return drink;
+                            }
+                        }
+                    }
+                }
+                console.log('No matching drink found, using default');
+                return defaultDrink;
+            } catch (e) {
+                console.log('Error finding drink:', e);
+                return defaultDrink;
+            }
+        }
+
+        function resetQuiz() {
+            // Reset user choices
+            userChoices = {
+                vibe: '',
+                flavor: '',
+                caffeine: ''
+            };
+            console.log('Quiz reset');
+            
+            // Go back to welcome screen
+            document.getElementById('result').classList.remove('active');
+            document.getElementById('welcome').classList.add('active');
+        }
+    </script>
+</body>
+</html>
